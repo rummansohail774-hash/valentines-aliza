@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You 🌸</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #fff1f7, #fdf6ec);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Quicksand', sans-serif;
+      overflow: hidden;
+    }
+    .card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+      z-index: 2;
+    }
+    h1 { font-family: 'Playfair Display', serif; color: #b85c8e; }
+    p { color: #555; }
+    button {
+      border: none; padding: 0.75rem 1.6rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      background: linear-gradient(135deg,#ff9acb,#ff6fae); color:white;
+      margin: .4rem;
+    }
+    input { padding:.7rem 1rem; border-radius:999px; border:1px solid #e6c6d6; width:80%; text-align:center; }
+    .envelope { width:160px; height:110px; margin:2rem auto; position:relative; cursor:pointer; }
+    .envelope-body { background:#ffb7d5; width:100%; height:100%; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:2rem; }
+    .envelope-top { position:absolute; inset:0; background:#ff9acb; clip-path:polygon(0 0,100% 0,50% 55%); transform-origin:top; transition:transform .8s ease; }
+    .envelope.open .envelope-top { transform: rotateX(180deg); }
+    .envelope.glow { box-shadow:0 0 25px rgba(255,105,180,.9); }
+    .heart { position:fixed; bottom:-20px; font-size:1.5rem; animation:floatUp 3s ease-in forwards; pointer-events:none; }
+    @keyframes floatUp { 100%{transform:translateY(-100vh);opacity:0} }
+    @keyframes writeText{from{width:0}to{width:100%}}
+    .handwrite{font-family:'Playfair Display',serif;font-size:2rem;color:#b85c8e;white-space:nowrap;overflow:hidden;border-right:2px solid #b85c8e;width:0;animation:writeText 4s steps(30,end) forwards,blink 0.7s step-end infinite alternate;}
+    @keyframes blink{50%{border-color:transparent}}
+  </style>
+</head>
+<body>
+<div class="card">
+  <div id="step1"><h1>Aliza 🌸</h1><p>Answer some questions to get access to a special note 💌</p><button onclick="startQuestions()">Start ✨</button></div>
+  <div id="step2" style="display:none;"><h1>Question 1 🌷</h1><p>What was the date we first met?</p><button onclick="wrongAnswer()">31 July 2025 ❌</button><button onclick="correctAnswer()">30 July 2025 💖</button><p id="error" style="display:none;color:#c94a6a;">Try again 💭</p></div>
+  <div id="step3" style="display:none;"><h1>Question 2 ☕</h1><p>Where did I give you our first flowers?</p><input id="flowerAnswer"/><br><br><button onclick="checkFlowerAnswer()">Submit</button><p id="flowerError" style="display:none;color:#c94a6a;">Hint: coffee place</p></div>
+  <div id="step4" style="display:none;"><h1>Question 3 👶</h1><p>Name of our future son?</p><input id="sonAnswer"/><br><br><button onclick="checkSonAnswer()">Submit</button><p id="sonError" style="display:none;color:#c94a6a;">Hint ✨</p></div>
+  <div id="step5" style="display:none;"><h1>Question 4 🎵</h1><p>Our favourite song?</p><input id="songAnswer"/><br><br><button onclick="checkSongAnswer()">Submit</button><p id="songError" style="display:none;color:#c94a6a;">Hint ✨</p></div>
+  <div id="step6" style="display:none;"><h1>Question 5 🎁</h1><p>First thing I gifted you?</p><input id="giftAnswer"/><br><br><button onclick="checkGiftAnswer()">Submit</button><p id="giftError" style="display:none;color:#c94a6a;">Hint ✨</p></div>
+  <div id="step7" style="display:none;"><h1>One Last Question 💘</h1><p>Will you be my Valentine? 🌹</p><button onclick="valentineYes()">Yes 💖</button><button onclick="valentineYes()">Of course 💕</button></div>
+  <div id="step8" style="display:none;"><h1>Your Surprise 💖</h1><p>Tap the envelope</p><div class="envelope" onclick="openEnvelope()"><div class="envelope-top"></div><div class="envelope-body">💌</div></div><div id="voiceNote" style="display:none;"><button id="playBtn" onclick="playVoiceNote()">▶ Play</button><button id="pauseBtn" onclick="pauseVoiceNote()" style="display:none;">⏸ Pause</button><audio id="audioPlayer" preload="auto"><source src="voice-note.mp3" type="audio/mpeg"></audio></div></div>
+  <div id="step9" style="display:none;"><h1 class="handwrite">I Love You Aliza Rumman 💖</h1></div>
+</div>
+<script>
+const step1=document.getElementById('step1');
+const step2=document.getElementById('step2');
+const step3=document.getElementById('step3');
+const step4=document.getElementById('step4');
+const step5=document.getElementById('step5');
+const step6=document.getElementById('step6');
+const step7=document.getElementById('step7');
+const step8=document.getElementById('step8');
+const step9=document.getElementById('step9');
+const error=document.getElementById('error');
+const flowerError=document.getElementById('flowerError');
+const sonError=document.getElementById('sonError');
+const songError=document.getElementById('songError');
+const giftError=document.getElementById('giftError');
+const flowerAnswer=document.getElementById('flowerAnswer');
+const sonAnswer=document.getElementById('sonAnswer');
+const songAnswer=document.getElementById('songAnswer');
+const giftAnswer=document.getElementById('giftAnswer');
+const voiceNote=document.getElementById('voiceNote');
+const audioPlayer=document.getElementById('audioPlayer');
+const playBtn=document.getElementById('playBtn');
+const pauseBtn=document.getElementById('pauseBtn');
+
+function startQuestions(){step1.style.display='none';step2.style.display='block';}
+function correctAnswer(){step2.style.display='none';step3.style.display='block';}
+function wrongAnswer(){error.style.display='block';}
+function checkFlowerAnswer(){const a=flowerAnswer.value.toLowerCase().trim();if(a==='costa cafe'||a==='costa'){step3.style.display='none';step4.style.display='block';flowerError.style.display='none';}else{flowerError.style.display='block';}}
+function checkSonAnswer(){const a=sonAnswer.value.toLowerCase().trim();if(a==='almir'){step4.style.display='none';step5.style.display='block';sonError.style.display='none';}else{sonError.style.display='block';}}
+function checkSongAnswer(){const a=songAnswer.value.toLowerCase().trim();if(a==='ehsas'||a==='ehsaas'){step5.style.display='none';step6.style.display='block';songError.style.display='none';}else{songError.style.display='block';}}
+function checkGiftAnswer(){const a=giftAnswer.value.toLowerCase().trim();if(a==='stanley'){step6.style.display='none';step7.style.display='block';giftError.style.display='none';}else{giftError.style.display='block';}}
+function valentineYes(){step7.style.display='none';step8.style.display='block';}
+function openEnvelope(){document.querySelector('.envelope').classList.add('open','glow');voiceNote.style.display='block';for(let i=0;i<15;i++)createHeart();}
+function playVoiceNote(){audioPlayer.play();playBtn.style.display='none';pauseBtn.style.display='inline-block';for(let i=0;i<15;i++)createHeart();audioPlayer.onended=()=>{step8.style.display='none';step9.style.display='block';};}
+function pauseVoiceNote(){audioPlayer.pause();playBtn.style.display='inline-block';pauseBtn.style.display='none';}
+function createHeart(){const h=document.createElement('div');h.className='heart';h.innerText='💖';h.style.left=Math.random()*100+'vw';document.body.appendChild(h);setTimeout(()=>h.remove(),3000);}
+</script>
+</body>
+</html>
